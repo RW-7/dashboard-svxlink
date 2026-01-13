@@ -92,7 +92,7 @@ define("SVXCONFIG", "svxlink.conf");
 //
 // Path and file name of log
 define("SVXLOGPATH", "/var/log/");
-define("SVXLOGPREFIX", "svxlink.log");
+define("SVXLOGPREFIX", "svxlink");
 //
 //
 // Define where is located menu wit buttons TOP or BOTTOM

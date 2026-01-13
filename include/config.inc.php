@@ -259,15 +259,24 @@ define("DATABASES","/var/www/html/databases");
 
 
 $svxConfigFile = '/etc/svxlink/svxlink.conf';
-if (fopen($svxConfigFile, 'r')) {
-    $svxconfig = parse_ini_file($svxConfigFile, true, INI_SCANNER_RAW);
-    $refApi = isset($svxconfig['ReflectorLogic']['API']) ? $svxconfig['ReflectorLogic']['API'] : '';
-    $fmnetwork = isset($svxconfig['ReflectorLogic']['HOSTS']) ? $svxconfig['ReflectorLogic']['HOSTS'] : '';
-    $qth = isset($svxconfig['LocationInfo']['QTH']) ? $svxconfig['LocationInfo']['QTH'] : '';
-    $freq = isset($svxconfig['Rx1']['FREQ']) ? $svxconfig['Rx1']['FREQ'] : '';
-    $EL_node = isset($svxconfig['LocationInfo']['LOCATION']) ? $svxconfig['LocationInfo']['LOCATION'] : '';
+
+if (file_exists($svxConfigFile) && is_readable($svxConfigFile)) {
+    // Unterdrücke Warnungen mit @, falls die Datei korrupt ist
+    $svxconfig = @parse_ini_file($svxConfigFile, true, INI_SCANNER_RAW);
+    
+    if ($svxconfig !== false) {
+        $refApi = $svxconfig['ReflectorLogic']['API'] ?? '';
+        $fmnetwork = $svxconfig['ReflectorLogic']['HOSTS'] ?? '';
+        $qth = $svxconfig['LocationInfo']['QTH'] ?? '';
+        $freq = $svxconfig['Rx1']['FREQ'] ?? '';
+        $EL_node = $svxconfig['LocationInfo']['LOCATION'] ?? '';
+        $callsign = $svxconfig['GLOBAL']['CALLSIGN'] ?? 'MYCALL'; 
+    } else {
+        // Fallback, wenn parse_ini_file scheitert
+        $callsign = "CONFIG_ERROR";
+        $fmnetwork = "Syntax Error in .conf";
+    }
 } else {
     $callsign = "NOCALL";
-    $fmnetwork = "not registered";
-    $EL_node = "unknown";
+    $fmnetwork = "not readable";
 }

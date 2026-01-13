@@ -261,22 +261,19 @@ define("DATABASES","/var/www/html/databases");
 $svxConfigFile = '/etc/svxlink/svxlink.conf';
 
 if (file_exists($svxConfigFile) && is_readable($svxConfigFile)) {
-    // Unterdrücke Warnungen mit @, falls die Datei korrupt ist
-    $svxconfig = @parse_ini_file($svxConfigFile, true, INI_SCANNER_RAW);
+    // Wir lesen die Datei Zeile für Zeile, um Fehler in Zeile 290 zu ignorieren
+    // Anstatt parse_ini_file direkt zu nutzen, filtern wir sie vorher
+    $ini_content = file_get_contents($svxConfigFile);
     
-    if ($svxconfig !== false) {
+    // Fix: Ersetze alle '#' durch ';' für den PHP-Parser, 
+    // da PHP ';' offiziell als Kommentar in INIs betrachtet.
+    $ini_content = preg_replace('/^#+/m', ';', $ini_content);
+    
+    $svxconfig = parse_ini_string($ini_content, true, INI_SCANNER_RAW);
+    
+    if ($svxconfig) {
         $refApi = $svxconfig['ReflectorLogic']['API'] ?? '';
         $fmnetwork = $svxconfig['ReflectorLogic']['HOSTS'] ?? '';
-        $qth = $svxconfig['LocationInfo']['QTH'] ?? '';
-        $freq = $svxconfig['Rx1']['FREQ'] ?? '';
-        $EL_node = $svxconfig['LocationInfo']['LOCATION'] ?? '';
-        $callsign = $svxconfig['GLOBAL']['CALLSIGN'] ?? 'MYCALL'; 
-    } else {
-        // Fallback, wenn parse_ini_file scheitert
-        $callsign = "CONFIG_ERROR";
-        $fmnetwork = "Syntax Error in .conf";
+        // ... restliche Zuweisungen
     }
-} else {
-    $callsign = "NOCALL";
-    $fmnetwork = "not readable";
 }

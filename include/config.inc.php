@@ -1,7 +1,7 @@
 <?php
 //Access to the Webserver for editing the config files
-define("PHP_AUTH_USER", "weich");
-define("PHP_AUTH_PW", "samsung");
+define("PHP_AUTH_USER", "svxlink");
+define("PHP_AUTH_PW", "12345");
 
 // header lines for information
 define("HEADER_CAT","FM-Hotspot");
